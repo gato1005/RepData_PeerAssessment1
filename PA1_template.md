@@ -44,12 +44,13 @@ Perday<-ddply(activity,
               .(date),
               summarize,
               totalsteps=sum(steps))
-qplot(Perday$totalsteps,
-      binwidth=1000,
-      geom = "histogram",
-      xlab = "total number of steps",
-      ylab = "frequency",
-      main = "Total steps daily before replacing NA values")
+plot_one<-qplot(Perday$totalsteps,
+                binwidth=1000,
+                geom = "histogram",
+                xlab = "total number of steps",
+                ylab = "frequency",
+                main = "Total steps daily before replacing NA values")
+print(plot_one)
 ```
 
 ```
@@ -89,12 +90,20 @@ interval_avg <- ddply(activity,
                       avgsteps=mean(steps,
                                     na.rm = TRUE))
 
-plot(x = interval_avg$interval,
-     y = interval_avg$avgsteps,
-     type = "l")
+plot_two<-plot(x = interval_avg$interval,
+               y = interval_avg$avgsteps,
+               type = "l")
 ```
 
 ![](PA1_template_files/figure-html/interval_avgsteps-1.png)<!-- -->
+
+```r
+print(plot_two)
+```
+
+```
+## NULL
+```
 
 --------------------
 
@@ -163,12 +172,13 @@ sum(is.na(filled_data$steps))
 
 ```r
 perday.filled<-ddply(filled_data,.(date),summarize,totalsteps=sum(steps))
-qplot(perday.filled$totalsteps,
-      binwidth=1000,
-      geom = "histogram",
-      xlab = "total number of steps",
-      ylab = "frequency",
-      main = "Total steps daily after replacing NA values")
+plot_three<-qplot(perday.filled$totalsteps,
+                  binwidth=1000,
+                  geom = "histogram",
+                  xlab = "total number of steps",
+                  ylab = "frequency",
+                  main = "Total steps daily after replacing NA values")
+print(plot_three)
 ```
 
 ![](PA1_template_files/figure-html/plot_without_missing-1.png)<!-- -->
@@ -202,7 +212,8 @@ filled_data$week<-activity$week
 
 interval_avg.filled<-ddply(filled_data,.(interval,week),summarise,totalsteps=mean(steps))
 
-ggplot(interval_avg.filled, aes(interval, totalsteps)) + geom_line() + facet_grid(week ~ .) + xlab("5 minute interval") + ylab("total steps")  
+plot_four<-ggplot(interval_avg.filled, aes(interval, totalsteps)) + geom_line() + facet_grid(week ~ .) + xlab("5 minute interval") + ylab("total steps")  
+print(plot_four)
 ```
 
 ![](PA1_template_files/figure-html/week_days-1.png)<!-- -->
