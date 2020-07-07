@@ -7,14 +7,20 @@ output:
     keep_md: true
 ---
 
+#### A default setting for all the chunks in this Rmd file
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,cache = TRUE)
 ```
+
+#### load the necessary libraries
 
 ```{r load_lib}
 library(plyr)
 library(ggplot2)
 ```
+
+-------------------
 
 ## Loading and preprocessing the data
 
@@ -24,7 +30,10 @@ activity <- read.csv(file = "activity.csv", header = TRUE)
 activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
 ```
 
+------------------------
+
 ## What is mean total number of steps taken per day?
+
 ```{r meansteps}
 Perday<-ddply(activity,
               .(date),
@@ -32,12 +41,23 @@ Perday<-ddply(activity,
               totalsteps=sum(steps))
 qplot(Perday$totalsteps,
       binwidth=1000,
-      geom = "histogram")
-mean(Perday$totalsteps)
-median(Perday$totalsteps)
+      geom = "histogram",
+      xlab = "total number of steps",
+      ylab = "frequency",
+      main = "Total steps daily before replacing NA values")
 ```
 
+#### the Mean and the Median are:-
+
+```{r mean_median_display}
+mean(Perday$totalsteps,na.rm = TRUE)
+median(Perday$totalsteps,na.rm = TRUE)
+```
+
+--------------------
+
 ## What is the average daily activity pattern?
+
 ```{r interval_avgsteps}
 interval_avg <- ddply(activity,
                       .(interval),
@@ -50,11 +70,19 @@ plot(x = interval_avg$interval,
      type = "l")
 
 ```
+
+--------------------
+
 ## Imputing missing values
 
-```{r missing_vals}
+#### First check the number of missing values
+
+```{r check_missing}
 print("total number of missing values are:-")
 sum(is.na(activity$steps))
+```
+
+```{r missing_vals}
 
 int_avgs<-rep(interval_avg$avgsteps,length(activity$steps)/length(interval_avg$interval))
 activity$avgs<-int_avgs
@@ -73,12 +101,60 @@ filled_data$steps = mapply(inputNas,
                            filled_data$steps,
                            filled_data$avgs)
 
+```
+
+#### Check the number of missing values again
+
+```{r recheck_missing}
+
 print("total number of missing values are:-")
 sum(is.na(filled_data$steps))
-head(filled_data)
 
 ```
 
+#### Make a histogram without any missing values 
+
+```{r plot_without_missing}
+perday.filled<-ddply(filled_data,.(date),summarize,totalsteps=sum(steps))
+qplot(perday.filled$totalsteps,
+      binwidth=1000,
+      geom = "histogram",
+      xlab = "total number of steps",
+      ylab = "frequency",
+      main = "Total steps daily after replacing NA values")
+
+```
+
+-------------------
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
+```{r week_days}
 
+which_day<-function(day)
+  {
+  
+    if(day %in% c("Monday","Tuesday","Wednesday","Thursday","Friday"))
+      {
+        return("Weekday")
+      }
+    else if(day %in% c("Saturday","Sunday"))
+      {
+        return("Weekend")
+      }
+    else
+      {
+        stop("Invalid Day")
+      }
+
+  }
+
+activity$week<-sapply(X = weekdays(activity$date),FUN = which_day,simplify = TRUE)
+filled_data$week<-activity$week
+
+interval_avg.filled<-ddply(filled_data,.(interval,week),summarise,totalsteps=mean(steps))
+
+ggplot(interval_avg.filled, aes(interval, totalsteps)) + geom_line() + facet_grid(week ~ .) + xlab("5 minute interval") + ylab("total steps")  
+```
+
+------------
