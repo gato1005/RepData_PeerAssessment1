@@ -1,25 +1,31 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: 'Atharva Rmagirkar'
+date: 'July 7th, 2020'
 output: 
   html_document:
     keep_md: true
 ---
 
-```{r load_lib, echo=TRUE, cache=TRUE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,cache = TRUE)
+```
+
+```{r load_lib}
 library(plyr)
 library(ggplot2)
 ```
 
 ## Loading and preprocessing the data
 
-```{r load_process, echo=TRUE,cache=TRUE}
+```{r load_process}
 unzip(zipfile = "activity.zip", exdir = ".")
 activity <- read.csv(file = "activity.csv", header = TRUE)
 activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
 ```
 
 ## What is mean total number of steps taken per day?
-```{r meansteps, echo=TRUE, cache=TRUE}
+```{r meansteps}
 Perday<-ddply(activity,
               .(date),
               summarize,
@@ -32,7 +38,7 @@ median(Perday$totalsteps)
 ```
 
 ## What is the average daily activity pattern?
-```{r interval_avgsteps, echo=TRUE, cache=TRUE}
+```{r interval_avgsteps}
 interval_avg <- ddply(activity,
                       .(interval),
                       summarize,
@@ -46,10 +52,33 @@ plot(x = interval_avg$interval,
 ```
 ## Imputing missing values
 
-```{r missing_vals, echo=TRUE, cache=TRUE}
+```{r missing_vals}
+print("total number of missing values are:-")
 sum(is.na(activity$steps))
 
+int_avgs<-rep(interval_avg$avgsteps,length(activity$steps)/length(interval_avg$interval))
+activity$avgs<-int_avgs
+inputNas= function(steps, avgs) 
+{
+  if (is.na(steps)) 
+  { 
+    return(avgs)
+  }
+  return(steps)
+}
+
+
+filled_data = activity
+filled_data$steps = mapply(inputNas,
+                           filled_data$steps,
+                           filled_data$avgs)
+
+print("total number of missing values are:-")
+sum(is.na(filled_data$steps))
+head(filled_data)
 
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
