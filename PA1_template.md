@@ -10,6 +10,9 @@ output:
 #### A default setting for all the chunks in this Rmd file
 
 
+```r
+knitr::opts_chunk$set(echo = TRUE,cache = TRUE)
+```
 
 #### load the necessary libraries
 

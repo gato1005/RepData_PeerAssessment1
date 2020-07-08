@@ -9,7 +9,7 @@ output:
 
 #### A default setting for all the chunks in this Rmd file
 
-```{r setup,include=FALSE}
+```{r setup,include=TRUE}
 knitr::opts_chunk$set(echo = TRUE,cache = TRUE)
 ```
 
