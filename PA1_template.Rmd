@@ -9,13 +9,13 @@ output:
 
 #### A default setting for all the chunks in this Rmd file
 
-```{r_setup,include=FALSE}
+```{r setup,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,cache = TRUE)
 ```
 
 #### load the necessary libraries
 
-```{r_load_lib}
+```{r load_lib}
 library(plyr)
 library(ggplot2)
 ```
@@ -24,7 +24,7 @@ library(ggplot2)
 
 ## Loading and preprocessing the data
 
-```{r_load_process}
+```{r load_process}
 unzip(zipfile = "activity.zip", exdir = ".")
 activity <- read.csv(file = "activity.csv", header = TRUE)
 activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
@@ -34,7 +34,7 @@ activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-```{r_meansteps}
+```{r meansteps}
 Perday<-ddply(activity,
               .(date),
               summarize,
@@ -50,7 +50,7 @@ print(plot_one)
 
 #### the Mean and the Median are:-
 
-```{r_mean_median_display}
+```{r mean_median_display}
 mean(Perday$totalsteps,na.rm = TRUE)
 median(Perday$totalsteps,na.rm = TRUE)
 ```
@@ -59,7 +59,7 @@ median(Perday$totalsteps,na.rm = TRUE)
 
 ## What is the average daily activity pattern?
 
-```{r_interval_avgsteps}
+```{r interval_avgsteps}
 interval_avg <- ddply(activity,
                       .(interval),
                       summarize,
@@ -78,12 +78,12 @@ print(plot_two)
 
 #### First check the number of missing values
 
-```{r_check_missing}
+```{r check_missing}
 print("total number of missing values are:-")
 sum(is.na(activity$steps))
 ```
 
-```{r_missing_vals}
+```{r missing_vals}
 
 int_avgs<-rep(interval_avg$avgsteps,length(activity$steps)/length(interval_avg$interval))
 activity$avgs<-int_avgs
@@ -106,7 +106,7 @@ filled_data$steps = mapply(inputNas,
 
 #### Check the number of missing values again
 
-```{r_recheck_missing}
+```{r recheck_missing}
 
 print("total number of missing values are:-")
 sum(is.na(filled_data$steps))
@@ -115,7 +115,7 @@ sum(is.na(filled_data$steps))
 
 #### Make a histogram without any missing values 
 
-```{r_plot_without_missing}
+```{r plot_without_missing}
 perday.filled<-ddply(filled_data,.(date),summarize,totalsteps=sum(steps))
 plot_three<-qplot(perday.filled$totalsteps,
                   binwidth=1000,
@@ -131,7 +131,7 @@ print(plot_three)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r_week_days}
+```{r week_days}
 
 which_day<-function(day)
   {

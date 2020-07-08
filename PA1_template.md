@@ -14,9 +14,13 @@ output:
 #### load the necessary libraries
 
 
-```r_load_lib
+```r
 library(plyr)
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 4.0.2
 ```
 
 -------------------
@@ -24,7 +28,7 @@ library(ggplot2)
 ## Loading and preprocessing the data
 
 
-```r_load_process
+```r
 unzip(zipfile = "activity.zip", exdir = ".")
 activity <- read.csv(file = "activity.csv", header = TRUE)
 activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
@@ -35,7 +39,7 @@ activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
 ## What is mean total number of steps taken per day?
 
 
-```r_meansteps
+```r
 Perday<-ddply(activity,
               .(date),
               summarize,
@@ -49,12 +53,29 @@ plot_one<-qplot(Perday$totalsteps,
 print(plot_one)
 ```
 
+```
+## Warning: Removed 8 rows containing non-finite values (stat_bin).
+```
+
+![](PA1_template_files/figure-html/meansteps-1.png)<!-- -->
+
 #### the Mean and the Median are:-
 
 
-```r_mean_median_display
+```r
 mean(Perday$totalsteps,na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(Perday$totalsteps,na.rm = TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 --------------------
@@ -62,7 +83,7 @@ median(Perday$totalsteps,na.rm = TRUE)
 ## What is the average daily activity pattern?
 
 
-```r_interval_avgsteps
+```r
 interval_avg <- ddply(activity,
                       .(interval),
                       summarize,
@@ -72,7 +93,16 @@ interval_avg <- ddply(activity,
 plot_two<-plot(x = interval_avg$interval,
                y = interval_avg$avgsteps,
                type = "l")
+```
+
+![](PA1_template_files/figure-html/interval_avgsteps-1.png)<!-- -->
+
+```r
 print(plot_two)
+```
+
+```
+## NULL
 ```
 
 --------------------
@@ -82,14 +112,24 @@ print(plot_two)
 #### First check the number of missing values
 
 
-```r_check_missing
+```r
 print("total number of missing values are:-")
+```
+
+```
+## [1] "total number of missing values are:-"
+```
+
+```r
 sum(is.na(activity$steps))
 ```
 
+```
+## [1] 2304
+```
 
-```r_missing_vals
 
+```r
 int_avgs<-rep(interval_avg$avgsteps,length(activity$steps)/length(interval_avg$interval))
 activity$avgs<-int_avgs
 inputNas= function(steps, avgs) 
@@ -106,23 +146,31 @@ filled_data = activity
 filled_data$steps = mapply(inputNas,
                            filled_data$steps,
                            filled_data$avgs)
-
 ```
 
 #### Check the number of missing values again
 
 
-```r_recheck_missing
-
+```r
 print("total number of missing values are:-")
-sum(is.na(filled_data$steps))
+```
 
+```
+## [1] "total number of missing values are:-"
+```
+
+```r
+sum(is.na(filled_data$steps))
+```
+
+```
+## [1] 0
 ```
 
 #### Make a histogram without any missing values 
 
 
-```r_plot_without_missing
+```r
 perday.filled<-ddply(filled_data,.(date),summarize,totalsteps=sum(steps))
 plot_three<-qplot(perday.filled$totalsteps,
                   binwidth=1000,
@@ -131,16 +179,16 @@ plot_three<-qplot(perday.filled$totalsteps,
                   ylab = "frequency",
                   main = "Total steps daily after replacing NA values")
 print(plot_three)
-
 ```
+
+![](PA1_template_files/figure-html/plot_without_missing-1.png)<!-- -->
 
 -------------------
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-```r_week_days
-
+```r
 which_day<-function(day)
   {
   
@@ -166,7 +214,8 @@ interval_avg.filled<-ddply(filled_data,.(interval,week),summarise,totalsteps=mea
 
 plot_four<-ggplot(interval_avg.filled, aes(interval, totalsteps)) + geom_line() + facet_grid(week ~ .) + xlab("5 minute interval") + ylab("total steps")  
 print(plot_four)
-
 ```
+
+![](PA1_template_files/figure-html/week_days-1.png)<!-- -->
 
 ------------
