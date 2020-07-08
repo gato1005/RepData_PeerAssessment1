@@ -11,26 +11,26 @@ output:
 
 #### load the necessary libraries
 
-```{r load_lib,echo=TRUE,cache=TRUE}
+```{r}
 library(plyr)
 library(ggplot2)
 ```
 
--------------------
+
 
 ## Loading and preprocessing the data
 
-```{r load_process,echo=TRUE,cache=TRUE}
+```{r}
 unzip(zipfile = "activity.zip", exdir = ".")
 activity <- read.csv(file = "activity.csv", header = TRUE)
 activity$date<-as.Date(x = activity$date, format = "%Y-%m-%d")
 ```
 
-------------------------
+
 
 ## What is mean total number of steps taken per day?
 
-```{r meansteps,echo=TRUE,cache=TRUE}
+```{r}
 Perday<-ddply(activity,
               .(date),
               summarize,
@@ -46,16 +46,16 @@ qplot(Perday$totalsteps,
 
 #### the Mean and the Median are:-
 
-```{r mean_median_display,echo=TRUE,cache=TRUE}
+```{r}
 mean(Perday$totalsteps,na.rm = TRUE)
 median(Perday$totalsteps,na.rm = TRUE)
 ```
 
---------------------
+
 
 ## What is the average daily activity pattern?
 
-```{r interval_avgsteps,echo=TRUE,cache=TRUE}
+```{r}
 interval_avg <- ddply(activity,
                       .(interval),
                       summarize,
@@ -68,18 +68,18 @@ plot(x = interval_avg$interval,
 
 ```
 
---------------------
+
 
 ## Imputing missing values
 
 #### First check the number of missing values
 
-```{r check_missing,echo=TRUE,cache=TRUE}
+```{r}
 print("total number of missing values are:-")
 sum(is.na(activity$steps))
 ```
 
-```{r missing_vals,echo=TRUE,cache=TRUE}
+```{r}
 
 int_avgs<-rep(interval_avg$avgsteps,length(activity$steps)/length(interval_avg$interval))
 activity$avgs<-int_avgs
@@ -102,7 +102,7 @@ filled_data$steps = mapply(inputNas,
 
 #### Check the number of missing values again
 
-```{r recheck_missing,echo=TRUE,cache=TRUE}
+```{r}
 
 print("total number of missing values are:-")
 sum(is.na(filled_data$steps))
@@ -111,7 +111,7 @@ sum(is.na(filled_data$steps))
 
 #### Make a histogram without any missing values 
 
-```{r plot_without_missing,echo=TRUE,cache=TRUE}
+```{r}
 perday.filled<-ddply(filled_data,.(date),summarize,totalsteps=sum(steps))
 qplot(perday.filled$totalsteps,
                   binwidth=1000,
@@ -123,11 +123,11 @@ qplot(perday.filled$totalsteps,
 
 ```
 
--------------------
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r week_days,echo=TRUE,cache=TRUE}
+```{r}
 
 which_day<-function(day)
   {
@@ -157,4 +157,4 @@ ggplot(interval_avg.filled, aes(interval, totalsteps)) + geom_line() + facet_gri
 
 ```
 
-------------
+
